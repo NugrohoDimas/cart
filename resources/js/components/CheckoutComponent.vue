@@ -10,7 +10,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(item, index) in items" :key="index">
+            <tr v-for="(item, index) in checkoutItems.items" :key="index">
                 <td>{{ item.name }}</td>
                 <td class="text-center justify-content-center">{{ item.quantity }}</td>
                 <td class="text-center justify-content-center">Rp. {{ item.price }}</td>
@@ -21,8 +21,8 @@
             <tr>
                 <td><strong>Total :</strong></td>
                 <td></td>
-                <td class="text-center justify-content-center" v-model="totalPrice"><strong>Rp. {{
-                        totalPrice
+                <td class="text-center justify-content-center"><strong>Rp. {{
+                        checkoutItems.totalPrice
                     }}</strong></td>
                 <td></td>
             </tr>
@@ -33,37 +33,29 @@
 </template>
 
 <script>
-import axios from "axios";
+import {mapGetters} from "vuex";
 
 export default {
     name: "CheckoutComponent",
     data() {
         return {
-            items: [],
-            totalPrice: 0
         };
     },
+    computed: {
+        ...mapGetters({
+            checkoutItems: 'getCheckoutItems'
+        })
+    },
     methods: {
-        setListCheckout(data) {
-            this.items = data;
-            data.forEach(value => {
-                this.totalPrice += value.price;
-            });
-        },
         deleteItem(data) {
-            axios.delete("http://localhost:3000/cart/" + data.id)
-                .then(response => {
-                    console.log(response);
-                });
+            this.$store.dispatch('deleteCartItem', data);
         },
         checkoutAlert() {
             alert("Chekout Berhasil!");
         },
     },
     mounted() {
-        axios.get('http://localhost:3000/cart')
-            .then(res => this.setListCheckout(res.data))
-            .catch(err => console.log("Gagal : ", err));
+        this.$store.dispatch('getCheckoutItems');
     }
 }
 </script>

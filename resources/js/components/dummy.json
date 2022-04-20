@@ -1,45 +1,26 @@
 {
   "products": [
     {
-      "stock": 15,
+      "stock": 30,
       "name": "Tepung Beras Rosebrand",
-      "description": "Tepung terbaik dari petani lokal",
       "price": 22000,
+      "description": "Tepung terbaik dari petani lokal",
       "id": 1
     },
     {
-      "stock": 7,
+      "stock": 40,
       "name": "Flour - All Purpose",
-      "description": "Supplement Right Vocal Cord with Nonaut Sub, Via Opening",
       "price": 15000,
+      "description": "Supplement Right Vocal Cord with Nonaut Sub, Via Opening",
       "id": 2
     },
     {
-      "stock": 20,
+      "stock": 50,
       "name": "Beer - Mcauslan Apricot",
-      "description": "Reattachment of Right Shoulder Region, Open Approach",
       "price": 11200,
+      "description": "Reattachment of Right Shoulder Region, Open Approach",
       "id": 3
     }
   ],
-  "cart": [
-    {
-      "name": "Tepung Beras Rosebrand",
-      "quantity": 1,
-      "price": 22000,
-      "id": 1
-    },
-    {
-      "quantity": 3,
-      "name": "Flour - All Purpose",
-      "price": 90000,
-      "id": 2
-    },
-    {
-      "name": "Beer - Mcauslan Apricot",
-      "quantity": 1,
-      "price": 11200,
-      "id": 3
-    }
-  ]
+  "cart": []
 }

@@ -12,7 +12,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(product, index) in products" :key="index">
+            <tr v-for="(product, index) in productList" :key="index">
                 <th scope="row"> {{ product.id }}</th>
                 <td>{{ product.name }}</td>
                 <td>{{ product.description }}</td>
@@ -28,81 +28,28 @@
 
 <script>
 import axios from "axios"
+import {mapGetters} from 'vuex';
 
 export default {
     name: "ProductComponent",
     data() {
         return {
-            products: []
+
         }
     },
     props: ["cartItem"],
+    computed: {
+        ...mapGetters({
+            productList: 'getProducts'
+        })
+    },
     methods: {
-        setProduct(data) {
-            this.products = data;
-        },
-        async addToCart(data) {
-            //Mengurangi stock di products
-            axios.put('http://localhost:3000/products/' + data.id, {
-                stock: data.stock - 1,
-                name: data.name,
-                description: data.description,
-                price: data.price
-
-            })
-                .then(response => {
-                    console.log("Berhasil mengurangi stock");
-                })
-                .catch(error => {
-                    console.log(error);
-                });
-            // Menambahkan atau mengupdate data di cart
-            let test;
-            await axios.get('http://localhost:3000/cart?name=' + data.name)
-                .then(res => {
-                    test = {
-                        "id": res.data[0].id,
-                        "name": res.data[0].name,
-                        "quantity": res.data[0].quantity,
-                        "price": res.data[0].price
-                    };
-                })
-                .catch(err => console.log("Gagal : ", err));
-
-            if (test) {
-                console.log("Update")
-                const newQuantity = test.quantity + 1;
-                axios.put('http://localhost:3000/cart/' + test.id, {
-                    quantity: newQuantity,
-                    name: test.name,
-                    price: test.price * newQuantity
-
-                })
-                    .then(response => {
-                        console.log(response);
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    });
-            } else {
-                console.log("Create")
-                const cartProduct = {
-                    "name": data.name,
-                    "quantity": 1,
-                    "price": data.price
-                };
-
-                axios.post('http://localhost:3000/cart/', cartProduct)
-                    .then(res => {
-                        return res;
-                    });
-            }
+        addToCart(data) {
+            this.$store.dispatch('addCartItem', data);
         },
     },
     mounted() {
-        axios.get('http://localhost:3000/products')
-            .then(res => this.setProduct(res.data))
-            .catch(err => console.log("Gagal : ", err));
+        this.$store.dispatch('getProducts');
     },
 }
 </script>

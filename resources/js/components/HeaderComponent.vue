@@ -24,7 +24,7 @@
                         <router-link class="nav-link" to="/checkout">
                             Checkout
                             <b-icon-cart></b-icon-cart>
-                            <span class="badge badge-success ml-2">0</span>
+                            <span class="badge badge-success ml-2">{{ totalCheckoutItems }}</span>
                         </router-link>
                     </li>
                 </ul>
@@ -34,6 +34,23 @@
 </template>
 
 <script>
+import {mapGetters} from "vuex";
+
 export default {
+    data() {
+        return {
+        };
+    },
+    computed: {
+        ...mapGetters({
+            totalCheckoutItems: 'getTotalCheckout'
+        })
+    },
+    methods: {
+
+    },
+    mounted() {
+        this.$store.dispatch('setTotalCheckout');
+    }
 }
 </script>
