@@ -139,14 +139,17 @@ export default new Vuex.Store({
 
             if (test) {
                 const newQuantity = test.quantity + 1;
+                console.log("Jumlah barang : " + newQuantity);
+                console.log("Harga : " + test.price);
                 axios.put('http://localhost:3000/cart/' + test.id, {
                     quantity: newQuantity,
                     name: test.name,
-                    price: test.price * newQuantity,
+                    price: data.price * newQuantity,
                     description: test.description,
                     productId: test.productId
                 })
                     .then(response => {
+                        console.log(response.data.price);
                         context.commit('UPDATE_CHECKOUT_BY_ID', response.data);
                     })
                     .catch(error => {
