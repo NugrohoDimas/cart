@@ -1,21 +1,21 @@
 {
   "products": [
     {
-      "stock": 30,
+      "stock": 26,
       "name": "Tepung Beras Rosebrand",
       "price": 22000,
       "description": "Tepung terbaik dari petani lokal",
       "id": 1
     },
     {
-      "stock": 40,
+      "stock": 36,
       "name": "Flour - All Purpose",
       "price": 15000,
       "description": "Supplement Right Vocal Cord with Nonaut Sub, Via Opening",
       "id": 2
     },
     {
-      "stock": 50,
+      "stock": 44,
       "name": "Beer - Mcauslan Apricot",
       "price": 11200,
       "description": "Reattachment of Right Shoulder Region, Open Approach",

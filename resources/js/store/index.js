@@ -63,7 +63,14 @@ export default new Vuex.Store({
             state.totalCheckout += 1;
         },
         DELETE_CHECKOUT_ITEM(state, payload) {
-            state.checkoutItems.splice(payload, 1);
+            let indexOfCartItem;
+            state.checkoutItems.forEach((value,index) => {
+                if(value.productId === payload.productId){
+                    indexOfCartItem = index;
+                    return;
+                }
+            })
+            state.checkoutItems.splice(indexOfCartItem, 1)
         },
         ADD_STOCK_PRODUCT(state, payload) {
             state.products = state.products.map(item => {
@@ -124,19 +131,20 @@ export default new Vuex.Store({
                         "name": res.data[0].name,
                         "quantity": res.data[0].quantity,
                         "description": res.data[0].description,
-                        "price": res.data[0].price
+                        "price": res.data[0].price,
+                        "productId": res.data[0].productId
                     };
                 })
                 .catch(err => console.log("Gagal : ", err));
 
             if (test) {
-                console.log("Update")
                 const newQuantity = test.quantity + 1;
                 axios.put('http://localhost:3000/cart/' + test.id, {
                     quantity: newQuantity,
                     name: test.name,
                     price: test.price * newQuantity,
-                    description: test.description
+                    description: test.description,
+                    productId: test.productId
                 })
                     .then(response => {
                         context.commit('UPDATE_CHECKOUT_BY_ID', response.data);
@@ -145,12 +153,12 @@ export default new Vuex.Store({
                         console.log(error);
                     });
             } else {
-                console.log("Create")
                 const cartProduct = {
                     "name": data.name,
                     "quantity": 1,
                     "price": data.price,
-                    "description": data.description
+                    "description": data.description,
+                    "productId": data.id
                 };
 
                 axios.post('http://localhost:3000/cart/', cartProduct)
@@ -160,8 +168,9 @@ export default new Vuex.Store({
             }
         },
         async deleteCartItem(context, data) {
+            console.log(data);
             let product;
-            await axios.get('http://localhost:3000/products?name=' + data.name)
+            await axios.get('http://localhost:3000/products?id=' + data.productId)
                 .then(res => {
                     product = {
                         "id": res.data[0].id,
