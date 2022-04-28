@@ -19,7 +19,7 @@ Route::get('/', function () {
 
 Route::get('/display/{vue_capture?}', function () {
     return view('welcome');
-})->where('vue_capture', '[\/\w\.-]*')->middleware('auth');
+})->where('vue_capture', '[\/\w\.-]*');
 
 Route::prefix('data')->group(function () {
     Route::prefix('product')->group(function () {
