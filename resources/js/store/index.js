@@ -34,7 +34,7 @@ export default new Vuex.Store({
         },
         UPDATE_PRODUCT_BY_ID(state, payload) {
             state.products = state.products.map(product => {
-                if (product.id === payload.id) {
+                if (product._id === payload._id) {
                     return Object.assign({}, product, payload);
                 }
                 return product;
@@ -42,7 +42,7 @@ export default new Vuex.Store({
         },
         UPDATE_CHECKOUT_BY_ID(state, payload) {
             state.checkoutItems = state.checkoutItems.map(item => {
-                if (item.id === payload.id) {
+                if (item._id === payload._id) {
                     return Object.assign({}, item, payload);
                 }
                 return item;
@@ -56,7 +56,7 @@ export default new Vuex.Store({
         UPDATE_CHECKOUT_ITEM(state, payload) {
             state.checkoutItems = [...payload];
             payload.forEach(value => {
-                state.totalPrice += value.price;
+                state.totalPrice += parseInt(value.price);
             });
         },
         UPDATE_CHECKOUT(state) {
@@ -65,7 +65,7 @@ export default new Vuex.Store({
         DELETE_CHECKOUT_ITEM(state, payload) {
             let indexOfCartItem;
             state.checkoutItems.forEach((value,index) => {
-                if(value.productId === payload.productId){
+                if(value.product_id === payload.product_id){
                     indexOfCartItem = index;
                     return;
                 }
@@ -74,7 +74,7 @@ export default new Vuex.Store({
         },
         ADD_STOCK_PRODUCT(state, payload) {
             state.products = state.products.map(item => {
-                if (item.id === payload.id) {
+                if (item._id === payload._id) {
                     return Object.assign({}, item, payload);
                 }
                 return item;
@@ -84,35 +84,34 @@ export default new Vuex.Store({
             state.totalCheckout -= payload;
         },
         MINUS_TOTAL_PRICE(state, data) {
-            state.totalPrice -= data;
+            state.totalPrice -= parseInt(data);
         },
     },
     actions: {
         getProducts(context) {
-            axios.get("http://localhost:3000/products")
+            axios.get("http://localhost:8000/data/product")
                 .then(response => {
                     context.commit('UPDATE_PRODUCT', response.data);
                 });
         },
         getCheckoutItems(context) {
-            axios.get('http://localhost:3000/cart')
+            axios.get('http://localhost:8000/data/cart')
                 .then(res => context.commit('UPDATE_CHECKOUT_ITEM', res.data))
                 .catch(err => console.log("Gagal : ", err));
         },
         setTotalCheckout(context) {
-            axios.get('http://localhost:3000/cart')
+            axios.get('http://localhost:8000/data/cart')
                 .then(res => context.commit('UPDATE_TOTAL_CHECKOUT', res.data))
                 .catch(err => console.log("Gagal : ", err));
         }
         ,
         async addCartItem(context, data) {
             //Mengurangi stock produk
-            axios.put('http://localhost:3000/products/' + data.id, {
+            axios.put('http://localhost:8000/data/product/' + data._id, {
                 stock: data.stock - 1,
                 name: data.name,
                 description: data.description,
                 price: data.price
-
             })
                 .then(response => {
                     context.commit('UPDATE_PRODUCT_BY_ID', response.data);
@@ -124,59 +123,55 @@ export default new Vuex.Store({
 
             // Menambahkan atau mengupdate data di cart
             let test;
-            await axios.get('http://localhost:3000/cart?name=' + data.name)
+            await axios.get('http://localhost:8000/data/cart/product/' + data._id)
                 .then(res => {
                     test = {
-                        "id": res.data[0].id,
+                        "_id": res.data[0]._id,
                         "name": res.data[0].name,
                         "quantity": res.data[0].quantity,
                         "description": res.data[0].description,
                         "price": res.data[0].price,
-                        "productId": res.data[0].productId
+                        "product_id": res.data[0].product_id
                     };
                 })
                 .catch(err => console.log("Gagal : ", err));
 
             if (test) {
                 const newQuantity = test.quantity + 1;
-                console.log("Jumlah barang : " + newQuantity);
-                console.log("Harga : " + test.price);
-                axios.put('http://localhost:3000/cart/' + test.id, {
+                axios.put('http://localhost:8000/data/cart/' + test._id, {
                     quantity: newQuantity,
                     name: test.name,
                     price: data.price * newQuantity,
                     description: test.description,
-                    productId: test.productId
+                    product_id: test.product_id
                 })
                     .then(response => {
-                        console.log(response.data.price);
                         context.commit('UPDATE_CHECKOUT_BY_ID', response.data);
                     })
                     .catch(error => {
-                        console.log(error);
+                        console.log(error.response.data);
                     });
             } else {
-                const cartProduct = {
-                    "name": data.name,
-                    "quantity": 1,
-                    "price": data.price,
-                    "description": data.description,
-                    "productId": data.id
-                };
-
-                axios.post('http://localhost:3000/cart/', cartProduct)
+                axios.post('http://localhost:8000/data/cart/', {
+                    name: data.name,
+                    quantity: 1,
+                    price: data.price,
+                    product_id: data._id
+                })
                     .then(res => {
                         context.commit('ADD_CART_ITEM', res.data);
+                    })
+                    .catch(error => {
+                        console.log(error.response.data)
                     });
             }
         },
         async deleteCartItem(context, data) {
-            console.log(data);
             let product;
-            await axios.get('http://localhost:3000/products?id=' + data.productId)
+            await axios.get('http://localhost:8000/data/product/' + data.product_id)
                 .then(res => {
                     product = {
-                        "id": res.data[0].id,
+                        "_id": res.data[0]._id,
                         "name": res.data[0].name,
                         "stock": res.data[0].stock,
                         "description": res.data[0].description,
@@ -185,19 +180,21 @@ export default new Vuex.Store({
                 })
                 .catch(err => console.log("Gagal : ", err));
 
-            axios.delete("http://localhost:3000/cart/" + data.id)
+            axios.delete("http://localhost:8000/data/cart/" + data._id)
                 .then(response => {
                     context.commit('DELETE_CHECKOUT_ITEM', data);
                     context.commit('MINUS_TOTAL_CHECKOUT', data.quantity);
                     context.commit('MINUS_TOTAL_PRICE', data.price);
 
-                    axios.put("http://localhost:3000/products/" + product.id, {
+                    axios.put("http://localhost:8000/data/product/" + product._id, {
                         stock: product.stock + data.quantity,
                         name: product.name,
                         price: product.price,
                         description: product.description
                     }).then(response => {
                         context.commit('ADD_STOCK_PRODUCT', response.data);
+                    }).catch(error => {
+                        console.log(error.response.data);
                     });
                 });
         },

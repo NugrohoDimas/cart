@@ -1,7 +1,7 @@
 <template>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">Tugas 3</a>
+            <a class="navbar-brand" href="/display">Tugas 3</a>
             <button
                 class="navbar-toggler"
                 type="button"
@@ -16,12 +16,12 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <router-link class="nav-link" to="/product">Product</router-link>
+                        <router-link class="nav-link" to="/display/product">Product</router-link>
                     </li>
                 </ul>
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <router-link class="nav-link" to="/checkout">
+                        <router-link class="nav-link" to="/display/checkout">
                             Checkout
                             <b-icon-cart></b-icon-cart>
                             <span class="badge badge-success ml-2">{{ totalCheckoutItems }}</span>
